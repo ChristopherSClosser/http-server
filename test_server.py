@@ -21,6 +21,6 @@ def test_a_response_ok():
 
 def test_response_error():
     """test_response_error."""
-    from server import resonse_error
-    res = resonse_error()
+    from server import response_error
+    res = response_error()
     assert res == 'HTTP/1.1 500 Internal Server Error'

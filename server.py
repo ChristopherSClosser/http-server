@@ -8,7 +8,7 @@ def response_ok():
     return "HTTP/1.1 200 OK"
 
 
-def resonse_error():
+def response_error():
     """Server error response."""
     return "HTTP/1.1 500 Internal Server Error"
 
