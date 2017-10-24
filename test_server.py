@@ -24,3 +24,9 @@ def test_response_error():
     from server import response_error
     res = response_error()
     assert res == 'HTTP/1.1 500 Internal Server Error'
+
+def test_response_logs():
+    from server import response_logs
+    message = "This is a test message"
+    res = main(message) 
+    assert response_logs(res)

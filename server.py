@@ -12,9 +12,16 @@ def response_error():
     """Server error response."""
     return "HTTP/1.1 500 Internal Server Error"
 
+def response_logs(data):
+    logs = []
+    logs.append(data)
+    response_ok()
+    return logs
+
 
 def server_main():
     """Main server function."""
+
     server_address = ('localhost', 8080)
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print('server is: ', server, '\nserver_address: ', server_address)
@@ -36,8 +43,9 @@ def server_main():
                     response_ok()
                     print(sys.stderr, "sending data back to the client")
                     connection.sendall(data.encode("utf8"))
+                    response_logs(data)
                 else:
-                    resonse_error()
+                    response_error()
                     print(sys.stderr, "no more data from", client_address)
                     break
 
