@@ -18,7 +18,7 @@ while True:
         print(sys.stderr, "connection from", client_address)
 
         while True:
-            data = connection.recv(16)
+            data = connection.recv(16).decode('utf8')
             print(sys.stderr, "received %s" % data)
             if data:
                 print(sys.stderr, "sending data back to the client")
