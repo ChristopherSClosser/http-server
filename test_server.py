@@ -1,5 +1,17 @@
+"""Test server."""
 import pytest
+from client import main
+
 
 def test_valid_client_string():
-    from client import main
-    assert main("This is a test message") != None
+    """test_valid_client_string."""
+    message = "This is a test message"
+    res = main(message)
+    print('this is what main(message) returns: ', res)
+    assert res == 22
+
+
+def test_case_fail():
+    """test_case_fail."""
+    with pytest.raises(Exception):
+        main()
