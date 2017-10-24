@@ -3,7 +3,6 @@
 import sys
 import socket
 
-
 def main(message):
     """Main method for send client message."""
     server_address = ('localhost', 8080)
