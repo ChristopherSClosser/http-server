@@ -1,6 +1,7 @@
 """Simple echo server."""
 import socket
 import sys
+LOGS = []
 
 
 def response_ok():
@@ -12,21 +13,20 @@ def response_error():
     """Server error response."""
     return "HTTP/1.1 500 Internal Server Error"
 
+
 def response_logs(data):
-    logs = []
-    logs.append(data)
+    """Append data to logs."""
+    LOGS.append(data)
     response_ok()
-    return logs
+    return LOGS
 
 
 def server_main():
     """Main server function."""
-
     server_address = ('localhost', 8080)
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print('server is: ', server, '\nserver_address: ', server_address)
     server.bind(server_address)
-
     server.listen(1)
 
     while True:
@@ -39,6 +39,7 @@ def server_main():
             while True:
                 data = connection.recv(16).decode('utf8')
                 print(sys.stderr, "received %s" % data)
+
                 if data:
                     response_ok()
                     print(sys.stderr, "sending data back to the client")
