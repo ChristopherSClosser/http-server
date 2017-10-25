@@ -5,19 +5,20 @@ import socket
 import sys
 LOGS = []
 
-# 'GET resource HTTP/1.1\r\n www.some.com\r\n\r\n'
+# 'GET resource HTTP/1.1\r\nHost: www.some.com\r\n\r\n'
 
 
 def parse_request(request):
     """Look for a well formed get request."""
-    if "GET" not in request:
+    req_list = request.split()
+
+    if "GET" not in req_list[0]:
         return "400 BAD REQUEST"
-    elif "HTTP/1.1" not in request:
+    elif "HTTP/1.1" not in req_list[2]:
         return "412 PRECONDITION FAILED - HTTP v. 1.1 required"
-    elif "Host" not in request:
+    elif "Host" not in req_list[3]:
         return "412 PRECONDITION FAILED - Host required"
     else:
-        req_list = request.split()
         res = response_ok() + ' ' + req_list[1]
         response_logs(res)
         return res
