@@ -1,7 +1,27 @@
+# -*- coding: utf-8 -*-
+
 """Simple echo server."""
 import socket
 import sys
 LOGS = []
+
+# 'GET resource HTTP/1.1\r\nHost: www.some.com\r\n\r\n'
+
+
+def parse_request(request):
+    """Look for a well formed get request."""
+    req_list = request.split()
+
+    if "GET" not in req_list[0]:
+        return "400 BAD REQUEST"
+    elif "HTTP/1.1" not in req_list[2]:
+        return "412 PRECONDITION FAILED - HTTP v. 1.1 required"
+    elif "Host" not in req_list[3]:
+        return "412 PRECONDITION FAILED - Host required"
+    else:
+        res = response_ok() + ' ' + req_list[1]
+        response_logs(res)
+        return res
 
 
 def response_ok():
@@ -17,7 +37,6 @@ def response_error():
 def response_logs(data):
     """Append data to logs."""
     LOGS.append(data)
-    response_ok()
     return LOGS
 
 
@@ -43,15 +62,19 @@ def server_main():
                 if data:
                     response_ok()
                     print(sys.stderr, "sending data back to the client")
-                    connection.sendall(data.encode("utf8"))
+                    connection.sendall(data)
                     response_logs(data)
                 else:
                     response_error()
                     print(sys.stderr, "no more data from", client_address)
                     break
+        except KeyboardInterupt:
+            connection.close()
+            sys.exit(1)
 
         finally:
             connection.close()
+            sys.exit(1)
 
 
 if __name__ == '__main__':
