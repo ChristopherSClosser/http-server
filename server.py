@@ -3,6 +3,15 @@ import socket
 import sys
 LOGS = []
 
+#'GET\r\nHeader: Value\r\n\r\n'
+
+def parse_request(request):
+
+    if "GET" not in request:
+        return "400 BAD REQUEST"
+    elif "HTTP/1.1" not in request:
+        return "412 PRECONDITION FAILED - HTTP v. 1.1 required"
+
 
 def response_ok():
     """Send an ok 200 message."""

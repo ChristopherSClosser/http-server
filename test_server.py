@@ -32,3 +32,13 @@ def test_response_logs():
     response_logs(res)
     print('response_logs: ', response_logs(res))
     assert response_logs(res)
+
+def test_response_error_400_invalid_get():
+    from server import parse_request
+    assert parse_request("r\nHeader: Value\r\n\r\n") == "400 BAD REQUEST"
+
+def test_response_error_412_bad_precondition():
+    from server import parse_request
+    assert parse_request("GET\r\nHeader: Value\r\n\r\n") == "412 PRECONDITION FAILED - HTTP v. 1.1 required"
+
+
