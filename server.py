@@ -14,7 +14,8 @@ def parse_request(request):
     elif "Host" not in request:
         return "412 PRECONDITION FAILED - Host required"
     else:
-        res = request.split(' ')
+        res = request.split()
+        print(res)
         response_ok()
         return res[1]
 
