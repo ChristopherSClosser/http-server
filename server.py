@@ -3,7 +3,7 @@ import socket
 import sys
 LOGS = []
 
-#'GET\r\nHeader: Value\r\n\r\n'
+#'GET resource HTTP/1.1\r\nHost: www.some.com\r\n\r\n'
 
 def parse_request(request):
 
@@ -11,6 +11,12 @@ def parse_request(request):
         return "400 BAD REQUEST"
     elif "HTTP/1.1" not in request:
         return "412 PRECONDITION FAILED - HTTP v. 1.1 required"
+    elif "Host" not in request:
+        return "412 PRECONDITION FAILED - Host required"
+    else:
+        res = request.split(' ')
+        response_ok()
+        return res[1]
 
 
 def response_ok():
