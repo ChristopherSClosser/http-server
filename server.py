@@ -68,7 +68,6 @@ def server_main():
                     response_error()
                     print(sys.stderr, "no more data from", client_address)
                     break
-        except KeyboardInterupt:
             connection.close()
             sys.exit(1)
 
