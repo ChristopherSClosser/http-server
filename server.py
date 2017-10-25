@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """Simple echo server."""
 import socket
 import sys
@@ -59,15 +61,19 @@ def server_main():
                 if data:
                     response_ok()
                     print(sys.stderr, "sending data back to the client")
-                    connection.sendall(data.encode("utf8"))
+                    connection.sendall(data)
                     response_logs(data)
                 else:
                     response_error()
                     print(sys.stderr, "no more data from", client_address)
                     break
+        except KeyboardInterupt:
+            connection.close()
+            sys.exit(1)
 
         finally:
             connection.close()
+            sys.exit(1)
 
 
 if __name__ == '__main__':

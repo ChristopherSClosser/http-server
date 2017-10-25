@@ -39,4 +39,15 @@ Oct 22 17 1430hrs server.py
 Oct 23 17 1300hrs server response_ok
                   Testing
                   README
+
+Oct 24 17 1300hrs response_error
+                  response_logs
+                  Testing
+                  ReadME
+
+Oct 25 17 1420hrs server parse_request
+                  Testing
+                  README
+
+
 </pre>
