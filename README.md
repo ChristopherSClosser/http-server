@@ -20,6 +20,7 @@
   - pytest
   - socket
   - sys
+  - os
 
 ## Change Log
 <!-- Use this are to document the iterative changes made to your application as each feature is successfully implemented. Use time stamps. Here's an example:
@@ -49,5 +50,8 @@ Oct 25 17 1420hrs server parse_request
                   Testing
                   README
 
+Oct 26 17 1420hrs server resolve_uri
+                  Testing
+                  README
 
 </pre>

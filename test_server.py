@@ -49,7 +49,7 @@ def test_parse_request_no_host_412():
 
 
 def test_parse_request_message_well_formed_returns_uri():
-    """Test for well formed request"""
+    """Test for well formed request."""
     assert parse_request("GET URI HTTP/1.1\r\nHost:\r\n") == "HTTP/1.1 200 OK URI"
 
 
@@ -60,14 +60,18 @@ def test_dir_uri_returns_files_expected():
     res = resolve_uri('dir_for_test')
     assert type(res[0]) == list
 
-def test_file_return_contents():
+
+def test_file_return_contents_with_div():
+    """Test_file_return_contents_with_div."""
     from server import resolve_uri
     resolve_uri('dir_for_test/another.txt')
     res = resolve_uri('dir_for_test/another.txt')
     assert res[1] == '<div>hello world this is a test of our http server!</div>'
 
+
 def test_file_check_file_extension():
+    """Test_file_check_file_extension."""
     from server import resolve_uri
     resolve_uri('dir_for_test/another.txt')
-    res = resolve_uri('dir_for_test/another.txt')
-    assert res[1] == '<div>hello world this is a test of our http server!</div>'
+    res = resolve_uri('dir_for_test/jam.png')
+    assert '</img>' in res[1]
