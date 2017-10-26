@@ -66,3 +66,7 @@ def test_dir_uri_returns_files_expected():
     from server import resolve_uri
     print('should return a list', resolve_uri('dir_for_test'))
     # assert resolve_uri('/dir_for_test')
+
+def test_file_return_contents():
+    from server import resolve_uri
+    assert resolve_uri('dir_for_test/another.txt') 

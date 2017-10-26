@@ -14,21 +14,19 @@ def resolve_uri(URI):
 
     html_str = ""
     contents = []
-  
     if os.path.isdir(URI):
         html_str += "<ul>"
         contents = os.listdir(URI)
 
         for i in range(len(contents)):
             html_str += "<li>" + contents[i] + "</li>"
-            html_str += "</ul>"
-
+       
+        html_str += "</ul>"
+ 
     elif os.path.isfile(URI):
         file = open(URI, “r”) 
-        html_str += "<div>"
-        for i in file:
-            html_str += i
-        html_str +=  "</div>"
+        html_str += "<div>" +file.read()+ "</div>"
+        file.close()
 
     return contents
 
