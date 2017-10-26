@@ -10,10 +10,11 @@ LOGS = []
 
 
 def resolve_uri(URI):
-    body = ((),) #intialize empty tuple
+    # body = ((),) #intialize empty tuple
 
     html_str = "<ul>"
-
+    contents = []
+    print('should be True: ', os.path.isdir(URI))
     if os.path.isdir(URI):
         contents = os.listdir(URI)
 
@@ -21,6 +22,7 @@ def resolve_uri(URI):
             html_str += "<li>" + contents[i] + "</li>"
             html_str += "</ul>"
 
+    return contents
 
 def parse_request(request):
     """Look for a well formed get request."""
