@@ -12,15 +12,23 @@ LOGS = []
 def resolve_uri(URI):
     # body = ((),) #intialize empty tuple
 
-    html_str = "<ul>"
+    html_str = ""
     contents = []
-    print('should be True: ', os.path.isdir(URI))
+  
     if os.path.isdir(URI):
+        html_str += "<ul>"
         contents = os.listdir(URI)
 
         for i in range(len(contents)):
             html_str += "<li>" + contents[i] + "</li>"
             html_str += "</ul>"
+
+    elif os.path.isfile(URI):
+        file = open(URI, “r”) 
+        html_str += "<div>"
+        for i in file:
+            html_str += i
+        html_str +=  "</div>"
 
     return contents
 
