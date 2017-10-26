@@ -10,13 +10,14 @@ LOGS = []
 
 
 def resolve_uri(URI):
-    # body = ((),) #intialize empty tuple
+    body = ['', '']  # intialize empty list
 
     html_str = ""
     contents = []
     if os.path.isdir(URI):
         html_str += "<ul>"
         contents = os.listdir(URI)
+        body[0] = contents
 
         for i in range(len(contents)):
             html_str += "<li>" + contents[i] + "</li>"
@@ -27,8 +28,10 @@ def resolve_uri(URI):
         file = open(URI, 'r')
         html_str += "<div>" + file.read() + "</div>"
         file.close()
+        body[1] = html_str
+        print('file read: body ', body)
 
-    return contents
+    return body
 
 
 def parse_request(request):
