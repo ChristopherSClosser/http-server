@@ -29,7 +29,6 @@ def resolve_uri(URI):
         html_str += "<div>" + file.read() + "</div>"
         file.close()
         body[1] = html_str
-        print('file read: body ', body)
 
     return body
 
@@ -70,16 +69,16 @@ def server_main():
     """Main server function."""
     server_address = ('localhost', 8080)
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print('server is: ', server, '\nserver_address: ', server_address)
+    print('server_address: {}'.format(server_address))
     server.bind(server_address)
     server.listen(1)
 
     while True:
-        print(sys.stderr, "waiting for a connection")
+        print("waiting for a connection\n")
         connection, client_address = server.accept()
 
         try:
-            print(sys.stderr, "connection from", client_address)
+            print("connection from", client_address)
 
             while True:
                 data = connection.recv(16).decode('utf8')
@@ -87,15 +86,9 @@ def server_main():
 
                 if data:
                     response_ok()
-                    print(sys.stderr, "sending data back to the client")
-                    connection.sendall(data)
                     response_logs(data)
                 else:
                     response_error()
-                    print(sys.stderr, "no more data from", client_address)
-                    break
-            connection.close()
-            sys.exit(1)
 
         finally:
             connection.close()

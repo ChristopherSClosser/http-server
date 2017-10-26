@@ -4,14 +4,6 @@ import pytest
 from server import parse_request
 
 
-def test_valid_client_string():
-    """test_valid_client_string."""
-    message = "This is a test message"
-    res = main(message)
-    print('this is what main(message) returns: ', res)
-    assert res == 22
-
-
 def test_a_response_ok():
     """Test if server response with HTTP 200 ok message."""
     from server import response_ok
