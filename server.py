@@ -20,15 +20,16 @@ def resolve_uri(URI):
 
         for i in range(len(contents)):
             html_str += "<li>" + contents[i] + "</li>"
-       
+
         html_str += "</ul>"
- 
+
     elif os.path.isfile(URI):
-        file = open(URI, “r”) 
-        html_str += "<div>" +file.read()+ "</div>"
+        file = open(URI, 'r')
+        html_str += "<div>" + file.read() + "</div>"
         file.close()
 
     return contents
+
 
 def parse_request(request):
     """Look for a well formed get request."""
