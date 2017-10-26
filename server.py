@@ -25,10 +25,20 @@ def resolve_uri(URI):
         html_str += "</ul>"
 
     elif os.path.isfile(URI):
-        file = open(URI, 'r')
-        html_str += "<div>" + file.read() + "</div>"
-        file.close()
-        body[1] = html_str
+        
+        extension = os.path.splitext(URI)
+
+        if extension[1] == ".txt" or ".md":
+            file = open(URI, 'r')
+            html_str += "<div>" + file.read() + "</div>"
+            file.close()
+            body[1] = html_str
+        elif extension[1] == ".jpg" or ".png":
+            file = open(URI, 'r')
+            html_str += "<img>" + file.read() + "</img>"
+            file.close()
+            body[1] = html_str
+
 
     return body
 

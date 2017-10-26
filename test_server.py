@@ -58,9 +58,15 @@ def test_dir_uri_returns_files_expected():
     from server import resolve_uri
     print('should return a list', resolve_uri('dir_for_test'))
     res = resolve_uri('dir_for_test')
-    assert res[0] == ['html.html', 'another.txt']
+    assert type(res[0]) == list
 
 def test_file_return_contents():
+    from server import resolve_uri
+    resolve_uri('dir_for_test/another.txt')
+    res = resolve_uri('dir_for_test/another.txt')
+    assert res[1] == '<div>hello world this is a test of our http server!</div>'
+
+def test_file_check_file_extension():
     from server import resolve_uri
     resolve_uri('dir_for_test/another.txt')
     res = resolve_uri('dir_for_test/another.txt')
