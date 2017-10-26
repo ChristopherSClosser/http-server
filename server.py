@@ -3,9 +3,22 @@
 """Simple echo server."""
 import socket
 import sys
+import os
 LOGS = []
 
 # 'GET resource HTTP/1.1\r\n www.some.com\r\n\r\n'
+def resolve_uri(URI):
+    body = ((),) #intialize empty tuple
+
+    html_str = "<ul>"
+
+    if os.path.isdir(URI):
+        contents = os.listdir(URI)
+
+        for i in range(len(contents)):
+            html_str += "<li>" + contents[i] + "</li>"
+        html_str += "</ul>"
+
 
 
 def parse_request(request):
