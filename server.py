@@ -98,7 +98,7 @@ def response_logs(data):
 def server_main():
     """Main server function."""
     server_address = ('localhost', 8080)
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
     print('server_address: {}'.format(server_address))
     server.bind(server_address)
     server.listen(1)
