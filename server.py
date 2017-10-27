@@ -4,20 +4,33 @@
 import socket
 import sys
 import os
+from datetime import datetime
 LOGS = []
 
 # 'GET resource HTTP/1.1\r\nHost: www.some.com\r\n\r\n'
 
+RESPONSE = {}
 
-def resolve_uri(URI):
+
+def make_response_body():
+    """Populate dictionary according to proper HTTP response body."""
+    RESPONSE['HTTP Version'] = response_ok()
+
+    dt = datetime.now()
+    RESPONSE['Date:'] = dt.strftime("%a, %d. %b %y %H: %M: %S GMT")
+
+    RESPONSE['Server:'] = sys.version
+
+
+def resolve_uri(uri):
     """Parse uri and return response."""
     body = ['', '']  # intialize empty list
 
     html_str = ""
     contents = []
-    if os.path.isdir(URI):
+    if os.path.isdir(uri):
         html_str += "<ul>"
-        contents = os.listdir(URI)
+        contents = os.listdir(uri)
         body[0] = contents
 
         for i in range(len(contents)):
@@ -25,18 +38,18 @@ def resolve_uri(URI):
 
         html_str += "</ul>"
 
-    elif os.path.isfile(URI):
+    elif os.path.isfile(uri):
 
-        extension = os.path.splitext(URI)
+        extension = os.path.splitext(uri)
         print('extension is: ', extension[1])
 
         if extension[1] == ".txt":
-            file = open(URI, 'r')
+            file = open(uri, 'r')
             html_str += "<div>" + file.read() + "</div>"
             file.close()
             body[1] = html_str
         elif extension[1] == ".png":
-            file = open(URI, 'r')
+            file = open(uri, 'r')
             html_str += "<img>" + file.read() + "</img>"
             file.close()
             body[1] = html_str
