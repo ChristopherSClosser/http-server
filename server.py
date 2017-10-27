@@ -21,6 +21,7 @@ def make_response_body():
 
     RESPONSE['Server:'] = sys.version
     content = resolve_uri()
+    RESPONSE['Content-Length'] = (sys.getsizeof(content) // 8)
     if '<img>' in content:
         RESPONSE['Content-Type:'] = 'image/html'
     elif '<div>' in content:
