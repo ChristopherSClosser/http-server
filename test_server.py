@@ -7,8 +7,9 @@ from server import parse_request
 def test_a_response_ok():
     """Test if server response with HTTP 200 ok message."""
     from server import response_ok
-    res = response_ok()
-    assert res == "HTTP/1.1 200 OK"
+    res = response_ok("GET www.google.com HTTP/1.1\r\nHost:\r\n")
+    assert "HTTP/1.1 200 OK" in res.values()
+
 
 
 def test_response_error():
@@ -30,7 +31,7 @@ def test_response_logs():
 
 def test_response_error_400_invalid_get():
     """Test_response_error_400_invalid_get."""
-    assert parse_request("r\nHeader: Value\r\n\r\n", "dir_for_test/another.txt") == "400 BAD REQUEST"
+    assert parse_request("r\nHeader: Value\r\n\r\n") == "400 BAD REQUEST"
 
 
 def test_response_error_412_bad_precondition():
@@ -77,7 +78,7 @@ def test_file_return_contents_with_div():
  #   assert '</img>' in res[1]
 
 def test_make_response_body():
-    from server import response_ok
+    from server import resolve_uri
     resolve_uri('dir_for_test/another.txt')
     res = resolve_uri('dir_for_test/another.txt')
     print(res)

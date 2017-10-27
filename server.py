@@ -10,28 +10,6 @@ LOGS = []
 # 'GET resource HTTP/1.1\r\nHost: www.some.com\r\n\r\n'
 
 
-
-''''
-def make_response_body():
-    """Populate dictionary according to proper HTTP response body."""
-    response = {}
-    response['HTTP Version'] = response_ok()
-
-    dt = datetime.now()
-    response['Date:'] = dt.strftime("%a, %d. %b %y %H: %M: %S GMT")
-
-    response['Server:'] = sys.version
-    content = resolve_uri()
-    response['Content-Length'] = (sys.getsizeof(content) // 8)
-    if '<img>' in content:
-        response['Content-Type:'] = 'image/html'
-    elif '<div>' in content:
-        response['Content-Type:'] = 'text/html'
-    response['Content'] = content
-
-    return response
-'''
-
 def resolve_uri(uri):
     """Parse uri and return response."""
     body = ['', '']  # intialize empty list
@@ -78,14 +56,13 @@ def parse_request(request):
     elif "Host" not in req_list[3]:
         return "412 PRECONDITION FAILED - Host required"
     else:
-        res = response_ok() + ' ' + req_list[1]
+        res = "HTTP/1.1 200 OK " + req_list[1]
         response_logs(res)
         return res
 
 
 def response_ok(data):
     """Send an ok 200 message."""
-
     response = {}
     response['HTTP Version'] = "HTTP/1.1 200 OK"
 
@@ -102,6 +79,7 @@ def response_ok(data):
     response['Content'] = content
 
     return response
+
 
 def response_error():
     """Server error response."""
