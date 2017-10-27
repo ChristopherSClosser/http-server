@@ -11,22 +11,11 @@ def test_a_response_ok():
     assert "HTTP/1.1 200 OK" in res.values()
 
 
-
 def test_response_error():
     """Test if server response with HTTP 500 Internal Server Error."""
     from server import response_error
     res = response_error()
     assert res == 'HTTP/1.1 500 Internal Server Error'
-
-
-def test_response_logs():
-    """test_response_logs."""
-    from server import response_logs
-    # message = "This is a test message"
-    # res = main(message)
-    # response_logs(res)
-    # print('response_logs: ', response_logs(res))
-    # assert response_logs(res)
 
 
 def test_response_error_400_invalid_get():
@@ -57,7 +46,7 @@ def test_parse_request_message_well_formed_returns_uri():
 def test_dir_uri_returns_files_expected():
     """Test_dir_uri_returns_files_expected."""
     from server import resolve_uri
-    print('should return a list', resolve_uri('dir_for_test'))
+    # print('should return a list', resolve_uri('dir_for_test'))
     res = resolve_uri('dir_for_test')
     assert type(res[0]) == list
 
@@ -70,15 +59,18 @@ def test_file_return_contents_with_div():
     assert res[1] == '<div>hello world this is a test of our http server!</div>'
 
 
-#def test_file_check_file_extension():
+def test_file_check_file_extension():
     """Test_file_check_file_extension."""
- #   from server import resolve_uri
- #   resolve_uri('dir_for_test/another.txt')
- #   res = resolve_uri('dir_for_test/jam.png')
- #   assert '</img>' in res[1]
+    from server import resolve_uri
+    resolve_uri('dir_for_test/another.txt')
+    res = resolve_uri('dir_for_test/jam.png')
+    assert '</img>' in res[1]
+
 
 def test_make_response_body():
+    """Test_make_response_body."""
     from server import resolve_uri
     resolve_uri('dir_for_test/another.txt')
     res = resolve_uri('dir_for_test/another.txt')
-    print(res)
+    print('test for: ', res)
+    assert res == ['', '<div>hello world this is a test of our http server!</div>']

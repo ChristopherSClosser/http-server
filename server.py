@@ -42,6 +42,9 @@ def resolve_uri(uri):
             file.close()
             body[1] = html_str
 
+    else:
+        return 'FileNotFoundError: 404\nYou did not enter a valid file or path!'
+
     return body
 
 
