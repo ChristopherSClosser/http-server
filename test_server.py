@@ -30,7 +30,7 @@ def test_response_logs():
 
 def test_response_error_400_invalid_get():
     """Test_response_error_400_invalid_get."""
-    assert parse_request("r\nHeader: Value\r\n\r\n") == "400 BAD REQUEST"
+    assert parse_request("r\nHeader: Value\r\n\r\n", "dir_for_test/another.txt") == "400 BAD REQUEST"
 
 
 def test_response_error_412_bad_precondition():
@@ -69,9 +69,15 @@ def test_file_return_contents_with_div():
     assert res[1] == '<div>hello world this is a test of our http server!</div>'
 
 
-def test_file_check_file_extension():
+#def test_file_check_file_extension():
     """Test_file_check_file_extension."""
-    from server import resolve_uri
+ #   from server import resolve_uri
+ #   resolve_uri('dir_for_test/another.txt')
+ #   res = resolve_uri('dir_for_test/jam.png')
+ #   assert '</img>' in res[1]
+
+def test_make_response_body():
+    from server import response_ok
     resolve_uri('dir_for_test/another.txt')
-    res = resolve_uri('dir_for_test/jam.png')
-    assert '</img>' in res[1]
+    res = resolve_uri('dir_for_test/another.txt')
+    print(res)

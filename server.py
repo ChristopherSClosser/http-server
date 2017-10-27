@@ -9,25 +9,28 @@ LOGS = []
 
 # 'GET resource HTTP/1.1\r\nHost: www.some.com\r\n\r\n'
 
-RESPONSE = {}
 
 
+''''
 def make_response_body():
     """Populate dictionary according to proper HTTP response body."""
-    RESPONSE['HTTP Version'] = response_ok()
+    response = {}
+    response['HTTP Version'] = response_ok()
 
     dt = datetime.now()
-    RESPONSE['Date:'] = dt.strftime("%a, %d. %b %y %H: %M: %S GMT")
+    response['Date:'] = dt.strftime("%a, %d. %b %y %H: %M: %S GMT")
 
-    RESPONSE['Server:'] = sys.version
+    response['Server:'] = sys.version
     content = resolve_uri()
-    RESPONSE['Content-Length'] = (sys.getsizeof(content) // 8)
+    response['Content-Length'] = (sys.getsizeof(content) // 8)
     if '<img>' in content:
-        RESPONSE['Content-Type:'] = 'image/html'
+        response['Content-Type:'] = 'image/html'
     elif '<div>' in content:
-        RESPONSE['Content-Type:'] = 'text/html'
-    RESPONSE['Content'] = content
+        response['Content-Type:'] = 'text/html'
+    response['Content'] = content
 
+    return response
+'''
 
 def resolve_uri(uri):
     """Parse uri and return response."""
@@ -80,11 +83,25 @@ def parse_request(request):
         return res
 
 
-def response_ok():
+def response_ok(data):
     """Send an ok 200 message."""
 
-    return "HTTP/1.1 200 OK"
+    response = {}
+    response['HTTP Version'] = "HTTP/1.1 200 OK"
 
+    dt = datetime.now()
+    response['Date:'] = dt.strftime("%a, %d. %b %y %H: %M: %S GMT")
+
+    response['Server:'] = sys.version
+    content = resolve_uri(data)
+    response['Content-Length'] = (sys.getsizeof(content) // 8)
+    if '<img>' in content:
+        response['Content-Type:'] = 'image/html'
+    elif '<div>' in content:
+        response['Content-Type:'] = 'text/html'
+    response['Content'] = content
+
+    return response
 
 def response_error():
     """Server error response."""
@@ -117,8 +134,9 @@ def server_main():
                 print(sys.stderr, "received %s" % data)
 
                 if data:
-                    response_ok()
+                    response_ok(data)
                     response_logs(data)
+
                 else:
                     response_error()
 
