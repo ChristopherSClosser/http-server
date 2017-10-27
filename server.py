@@ -20,6 +20,12 @@ def make_response_body():
     RESPONSE['Date:'] = dt.strftime("%a, %d. %b %y %H: %M: %S GMT")
 
     RESPONSE['Server:'] = sys.version
+    content = resolve_uri()
+    if '<img>' in content:
+        RESPONSE['Content-Type:'] = 'image/html'
+    elif '<div>' in content:
+        RESPONSE['Content-Type:'] = 'text/html'
+    RESPONSE['Content'] = content
 
 
 def resolve_uri(uri):
@@ -75,6 +81,7 @@ def parse_request(request):
 
 def response_ok():
     """Send an ok 200 message."""
+
     return "HTTP/1.1 200 OK"
 
 
