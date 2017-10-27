@@ -15,17 +15,17 @@ def main(message):
 
         amount_rec = 0
         amount_ex = len(message)
-        # res = ''
+        data = ''
 
         while amount_rec < amount_ex:
-            data = server.recv(16)
+            data += server.recv(16).decode('utf8')
             # res += data
             amount_rec += len(data)
-            print(sys.stderr, 'received %s ' % data)
+        print('received: %s ' % data)
 
     finally:
         server.close()
-    return amount_rec
+    return data
 
 
 if __name__ == "__main__":

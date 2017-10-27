@@ -4,18 +4,18 @@ import sys
 
 
 server_address = ('localhost', 8080)
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-print('server is: ', server, '\nserver_address: ', server_address)
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
+print('server_address: {}'.format(server_address))
 server.bind(server_address)
 
 server.listen(1)
 
 while True:
-    print(sys.stderr, "waiting for a connection")
+    print("waiting for a connection\n")
     connection, client_address = server.accept()
 
     try:
-        print(sys.stderr, "connection from", client_address)
+        print("connection from", client_address)
 
         while True:
             data = connection.recv(16).decode('utf8')
@@ -24,8 +24,10 @@ while True:
                 print(sys.stderr, "sending data back to the client")
                 connection.sendall(data)
             else:
-                print(sys.stderr, "no more data from", client_address)
+                print("no more data from", client_address)
                 break
 
-    finally:
+    except KeyboardInterrupt:
+        connection.shutdown(socket.SHUT_WR)
         connection.close()
+        sys.exit()

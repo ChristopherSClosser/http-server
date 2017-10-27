@@ -7,7 +7,7 @@ def test_valid_client_string():
     """test_valid_client_string."""
     message = "This is a test message"
     res = main(message)
-    print('this is what main(message) returns: ', res)
+    # print('this is what main(message) returns: ', res)
     assert res == 22
 
 
