@@ -1,4 +1,3 @@
-"""."""
 # -*- coding: utf-8 -*-
 
 """Simple echo server."""
@@ -30,7 +29,6 @@ def resolve_uri(uri):
     elif os.path.isfile(uri):
 
         extension = os.path.splitext(uri)
-        print('extension is: ', extension[1])
 
         if extension[1] == ".txt":
             file = open(uri, 'r')
@@ -96,11 +94,13 @@ def response_logs(data):
     return LOGS
 
 
-def http_server(str_socket, address):
-    """Main server function."""
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+def server_main():
+    """Main server."""
+    server_address = ('localhost', 8080)
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
     print('server_address: {}'.format(server_address))
     server.bind(server_address)
+
     server.listen(1)
 
     while True:
@@ -112,21 +112,21 @@ def http_server(str_socket, address):
 
             while True:
                 data = connection.recv(16).decode('utf8')
-                print(sys.stderr, "received %s" % data)
-
+                # print("received %s" % data)
                 if data:
-                    str_socket.sendall(response_ok(data), response_logs(data))
+                    connection.sendall(data.encode())
                 else:
-                    response_error()
+                    break
 
-        finally:
+        except KeyboardInterrupt:
+            connection.shutdown(socket.SHUT_WR)
             connection.close()
-            sys.exit(1)
+            sys.exit()
 
 
 if __name__ == '__main__':
     from gevent.server import StreamServer
     from gevent.monkey import patchall
     patchall()
-    server = StreamServer(('localhost', 8000), http_server)
+    server = StreamServer(('localhost', 8000), server_main)
     server.serve_forever()
