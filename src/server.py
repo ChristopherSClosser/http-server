@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 """Simple echo server."""
 
@@ -37,6 +38,13 @@ def response_logs(data):
     LOGS.append(data)
     response_ok()
     return LOGS
+=======
+"""Simple echo server."""
+# -*- coding: utf-8 -*-
+
+import socket
+import sys
+>>>>>>> master
 
 
 def server_main():
@@ -59,7 +67,11 @@ def server_main():
                 data = connection.recv(16).decode('utf8')
                 print(sys.stderr, "received %s" % data)
                 if data:
+<<<<<<< HEAD
                     print("sending data back to the client")
+=======
+                    print(sys.stderr, "sending data back to the client")
+>>>>>>> master
                     connection.sendall(data.encode())
                 else:
                     print("no more data from", client_address)

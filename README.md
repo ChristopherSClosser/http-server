@@ -18,6 +18,7 @@
 <!-- Provide a detailed description of the application design. What technologies (languages, libraries, etc) you're using, and any other relevant design information. -->
 - Python 2 and 3
   - pytest
+<<<<<<< HEAD
   - socket
   - sys
 
@@ -26,6 +27,12 @@
 
 01-01-2001 4:59pm - Added functionality to add and delete some things.
 -->
+=======
+
+
+## Change Log
+
+>>>>>>> master
 <pre>Oct 22 17 1300hrs&ensp;&ensp;-&ensp;&ensp;Init&ensp;&ensp;-  
 
 Oct 22 17 1330hrs server.py
