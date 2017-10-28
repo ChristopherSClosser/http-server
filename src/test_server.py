@@ -1,17 +1,13 @@
 """Test server."""
 import pytest
 from client import main
-<<<<<<< HEAD
 from server import parse_request
-=======
->>>>>>> master
 
 
 def test_valid_client_string():
     """test_valid_client_string."""
     message = "This is a test message"
     res = main(message)
-<<<<<<< HEAD
     assert res == "This is a test message"
 
 
@@ -19,22 +15,15 @@ def test_a_response_ok():
     """Test if server response with HTTP 200 ok message."""
     from server import response_ok
     res = response_ok()
-    assert res == "HTTP/1.1 200 OK"
+    assert res == 'HTTP/1.1 200 OK'
 
 
-=======
-    # print('this is what main(message) returns: ', res)
-    assert res == "This is a test message"
-
-
->>>>>>> master
 def test_case_fail():
     """test_case_fail."""
     with pytest.raises(Exception):
         main()
 
 
-<<<<<<< HEAD
 def test_response_error():
     """Test if server response with HTTP 500 Internal Server Error."""
     from server import response_error
@@ -51,8 +40,6 @@ def test_response_logs():
     assert response_logs(res)
 
 
-=======
->>>>>>> master
 def test_message_shorter_than_one_buffer():
     """Test_message_shorter_than_one_buffer."""
     message = "A"
@@ -79,7 +66,6 @@ def test_multiple_msg_buffers_one_length():
 
 def test_message_for_non_ascii():
     """Test_message_for_non_ascii."""
-<<<<<<< HEAD
 
     # assert len(non_ascii1) == 1
     # assert len(non_ascii2) == 1
@@ -108,9 +94,3 @@ def test_parse_request_no_host_412():
 def test_parse_request_message_well_formed_returns_uri():
     """Test for well formed request."""
     assert parse_request("GET URI HTTP/1.1\r\nHost:\r\n") == "HTTP/1.1 200 OK URI"
-=======
-    non_ascii1 = 'é'
-    non_ascii2 = '¨'
-    assert len(non_ascii1) == 1
-    assert len(non_ascii2) == 1
->>>>>>> master
