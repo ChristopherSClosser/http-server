@@ -18,14 +18,10 @@
 <!-- Provide a detailed description of the application design. What technologies (languages, libraries, etc) you're using, and any other relevant design information. -->
 - Python 2 and 3
   - pytest
-  - socket
-  - sys
+
 
 ## Change Log
-<!-- Use this are to document the iterative changes made to your application as each feature is successfully implemented. Use time stamps. Here's an example:
 
-01-01-2001 4:59pm - Added functionality to add and delete some things.
--->
 <pre>Oct 22 17 1300hrs&ensp;&ensp;-&ensp;&ensp;Init&ensp;&ensp;-  
 
 Oct 22 17 1330hrs server.py

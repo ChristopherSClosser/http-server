@@ -17,6 +17,7 @@ def test_case_fail():
         main()
 
 
+<<<<<<< HEAD
 def test_response_error():
     """Test if server response with HTTP 500 Internal Server Error."""
     from server import response_error
@@ -34,6 +35,8 @@ def test_response_logs():
     assert response_logs(res)
 
 
+=======
+>>>>>>> master
 def test_message_shorter_than_one_buffer():
     """Test_message_shorter_than_one_buffer."""
     message = "A"
@@ -60,6 +63,13 @@ def test_multiple_msg_buffers_one_length():
 
 def test_message_for_non_ascii():
     """Test_message_for_non_ascii."""
+<<<<<<< HEAD
 
     # assert len(non_ascii1) == 1
     # assert len(non_ascii2) == 1
+=======
+    non_ascii1 = 'é'
+    non_ascii2 = '¨'
+    assert len(non_ascii1) == 1
+    assert len(non_ascii2) == 1
+>>>>>>> master

@@ -12,6 +12,7 @@ def main(message):
 
     try:
         server.sendall(message.encode('utf8'))
+
         amount_rec = 0
         amount_ex = len(message)
         data = ''
