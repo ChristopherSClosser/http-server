@@ -4,7 +4,6 @@ import pytest
 from server import parse_request
 
 
-
 def test_valid_client_string():
     """test_valid_client_string."""
     message = "This is a test message"
