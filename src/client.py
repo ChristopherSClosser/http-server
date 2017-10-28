@@ -1,6 +1,6 @@
-
 # -*- coding: utf-8 -*-
 """Client."""
+
 
 import sys
 import socket

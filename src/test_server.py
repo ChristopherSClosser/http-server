@@ -4,6 +4,7 @@ import pytest
 from server import parse_request
 
 
+
 def test_valid_client_string():
     """test_valid_client_string."""
     message = "This is a test message"
@@ -115,3 +116,4 @@ def test_make_response_body():
     from server import resolve_uri
     res = resolve_uri('src/dir_for_test/another.txt')
     assert res == ['', '<div>hello world this is a test of our http server!</div>']
+
