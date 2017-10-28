@@ -27,15 +27,14 @@ def resolve_uri(uri):
         html_str += "</ul>"
 
     elif os.path.isfile(uri):
-
         extension = os.path.splitext(uri)
-        print('extension is: ', extension[1])
 
         if extension[1] == ".txt":
             file = open(uri, 'r')
             html_str += "<div>" + file.read() + "</div>"
             file.close()
             body[1] = html_str
+
         elif extension[1] == ".png":
             file = open(uri, 'r')
             html_str += "<img>" + file.read() + "</img>"
@@ -74,11 +73,14 @@ def response_ok(data):
 
     response['Server:'] = sys.version
     content = resolve_uri(data)
+
     response['Content-Length'] = (sys.getsizeof(content) // 8)
+
     if '<img>' in content:
         response['Content-Type:'] = 'image/html'
     elif '<div>' in content:
         response['Content-Type:'] = 'text/html'
+
     response['Content'] = content
 
     return response
@@ -96,11 +98,12 @@ def response_logs(data):
 
 
 def server_main():
-    """Main server function."""
+    """Main server."""
     server_address = ('localhost', 8080)
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
     print('server_address: {}'.format(server_address))
     server.bind(server_address)
+
     server.listen(1)
 
     while True:
@@ -112,19 +115,18 @@ def server_main():
 
             while True:
                 data = connection.recv(16).decode('utf8')
-                print(sys.stderr, "received %s" % data)
-
+                # print("received %s" % data)
                 if data:
-                    response_ok(data)
-                    response_logs(data)
-
+                    connection.sendall(data.encode())
                 else:
-                    response_error()
+                    break
 
-        finally:
+        except KeyboardInterrupt:
+            connection.shutdown(socket.SHUT_WR)
             connection.close()
-            sys.exit(1)
+            sys.exit()
 
 
 if __name__ == '__main__':
+    # pragma: no cover
     server_main()
