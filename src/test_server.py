@@ -1,6 +1,7 @@
 """Test server."""
 import pytest
 from client import main
+from server import server_main
 
 
 def test_valid_client_string():
@@ -21,8 +22,23 @@ def test_message_shorter_than_one_buffer():
     res = main(message)
     assert len(res) == 1
 
-#def test_message_several_buffers():
+def test_message_several_buffers():
+    message = "Hello World this is a test"
+    res = main(message)
+    assert len(res) > 5
 
-#def test_multiple_msg_buffers_one_length():
 
-#def test_message_for_non_ascii():
+def test_multiple_msg_buffers_one_length():
+    msg1 = "a"
+    msg2 = "b"
+    msg3 = "c"
+    assert len(msg1) == 1
+    assert len(msg2) == 1
+    assert len(msg3) == 1
+
+def test_message_for_non_ascii():
+    non_ascii1 = 'é'
+    non_ascii2 = '¨'
+    assert len(non_ascii1) == 1
+    assert len(non_ascii2) == 1
+
