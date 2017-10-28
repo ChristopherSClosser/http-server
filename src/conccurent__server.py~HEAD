@@ -1,14 +1,10 @@
-"""."""
+"""This is a server with concurrency."""
 # -*- coding: utf-8 -*-
-
-"""Simple echo server."""
 import socket
 import sys
 import os
 from datetime import datetime
 LOGS = []
-
-# 'GET resource HTTP/1.1\r\nHost: www.some.com\r\n\r\n'
 
 
 def resolve_uri(uri):
@@ -44,7 +40,8 @@ def resolve_uri(uri):
             body[1] = html_str
 
     else:
-        return 'FileNotFoundError: 404\nYou did not enter a valid file or path!'
+        return 'FileNotFoundError: 404\n'
+        + 'You did not enter a valid file or path!'
 
     return body
 
@@ -98,6 +95,7 @@ def response_logs(data):
 
 def http_server(str_socket, address):
     """Main server function."""
+    server_address = ('localhost', 8080)
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print('server_address: {}'.format(server_address))
     server.bind(server_address)

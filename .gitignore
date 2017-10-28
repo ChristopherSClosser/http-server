@@ -1,9 +1,25 @@
+Skip to content
+This repository
+Search
+Pull requests
+Issues
+Marketplace
+Explore
+ @ChristopherSClosser
+ Sign out
+ Watch 1
+  Star 0  Fork 0 ChristopherSClosser/http-server
+ Code  Issues 0  Pull requests 3  Projects 0  Wiki  Insights  Settings
+Branch: step3 Find file Copy pathhttp-server/.gitignore
+d8bb5f6  30 minutes ago
+@ChristopherSClosser ChristopherSClosser step 3 good
+1 contributor
+RawBlameHistory
+102 lines (80 sloc)  1.13 KB
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
-tox.ini
 
 # C extensions
 *.so
@@ -101,3 +117,15 @@ ENV/
 
 # mypy
 .mypy_cache/
+© 2017 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+API
+Training
+Shop
+Blog
+About

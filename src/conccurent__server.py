@@ -1,10 +1,13 @@
-"""This is a server with concurrency."""
 # -*- coding: utf-8 -*-
+
+"""Simple echo server."""
 import socket
 import sys
 import os
 from datetime import datetime
 LOGS = []
+
+# 'GET resource HTTP/1.1\r\nHost: www.some.com\r\n\r\n'
 
 
 def resolve_uri(uri):
@@ -26,7 +29,6 @@ def resolve_uri(uri):
     elif os.path.isfile(uri):
 
         extension = os.path.splitext(uri)
-        print('extension is: ', extension[1])
 
         if extension[1] == ".txt":
             file = open(uri, 'r')
@@ -40,8 +42,7 @@ def resolve_uri(uri):
             body[1] = html_str
 
     else:
-        return 'FileNotFoundError: 404\n'
-        + 'You did not enter a valid file or path!'
+        return 'FileNotFoundError: 404\nYou did not enter a valid file or path!'
 
     return body
 
@@ -93,12 +94,13 @@ def response_logs(data):
     return LOGS
 
 
-def http_server(str_socket, address):
-    """Main server function."""
+def server_main():
+    """Main server."""
     server_address = ('localhost', 8080)
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
     print('server_address: {}'.format(server_address))
     server.bind(server_address)
+
     server.listen(1)
 
     while True:
@@ -110,21 +112,21 @@ def http_server(str_socket, address):
 
             while True:
                 data = connection.recv(16).decode('utf8')
-                print(sys.stderr, "received %s" % data)
-
+                # print("received %s" % data)
                 if data:
-                    str_socket.sendall(response_ok(data), response_logs(data))
+                    connection.sendall(data.encode())
                 else:
-                    response_error()
+                    break
 
-        finally:
+        except KeyboardInterrupt:
+            connection.shutdown(socket.SHUT_WR)
             connection.close()
-            sys.exit(1)
+            sys.exit()
 
 
 if __name__ == '__main__':
     from gevent.server import StreamServer
-    from gevent.monkey import patchall
-    patchall()
-    server = StreamServer(('localhost', 8000), http_server)
+    from gevent.monkey import patch_all
+    patch_all()
+    server = StreamServer(('localhost', 8080), server_main, spawn=pool)
     server.serve_forever()
