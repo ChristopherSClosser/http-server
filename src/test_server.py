@@ -1,6 +1,6 @@
 """Test server."""
-from client import main
 import pytest
+from client import main
 from server import parse_request
 
 
@@ -8,8 +8,7 @@ def test_valid_client_string():
     """test_valid_client_string."""
     message = "This is a test message"
     res = main(message)
-    print('this is what main(message) returns: ', res)
-    assert res == 22
+    assert res == "This is a test message"
 
 
 def test_a_response_ok():
@@ -17,6 +16,12 @@ def test_a_response_ok():
     from server import response_ok
     res = response_ok()
     assert res == "HTTP/1.1 200 OK"
+
+
+def test_case_fail():
+    """test_case_fail."""
+    with pytest.raises(Exception):
+        main()
 
 
 def test_response_error():
@@ -32,8 +37,38 @@ def test_response_logs():
     message = "This is a test message"
     res = main(message)
     response_logs(res)
-    print('response_logs: ', response_logs(res))
     assert response_logs(res)
+
+
+def test_message_shorter_than_one_buffer():
+    """Test_message_shorter_than_one_buffer."""
+    message = "A"
+    res = main(message)
+    assert len(res) == 1
+
+
+def test_message_several_buffers():
+    """Test_message_several_buffers."""
+    message = "Hello World this is a test"
+    res = main(message)
+    assert len(res) > 5
+
+
+def test_multiple_msg_buffers_one_length():
+    """Test_multiple_msg_buffers_one_length."""
+    msg1 = "a"
+    msg2 = "b"
+    msg3 = "c"
+    assert len(msg1) == 1
+    assert len(msg2) == 1
+    assert len(msg3) == 1
+
+
+def test_message_for_non_ascii():
+    """Test_message_for_non_ascii."""
+
+    # assert len(non_ascii1) == 1
+    # assert len(non_ascii2) == 1
 
 
 def test_response_error_400_invalid_get():
@@ -57,5 +92,5 @@ def test_parse_request_no_host_412():
 
 
 def test_parse_request_message_well_formed_returns_uri():
-    """Test for well formed request"""
+    """Test for well formed request."""
     assert parse_request("GET URI HTTP/1.1\r\nHost:\r\n") == "HTTP/1.1 200 OK URI"

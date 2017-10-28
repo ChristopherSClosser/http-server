@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-
 """Simple echo server."""
+
 import socket
 import sys
 LOGS = []
-
-# 'GET resource HTTP/1.1\r\nHost: www.some.com\r\n\r\n'
 
 
 def parse_request(request):
@@ -37,43 +35,40 @@ def response_error():
 def response_logs(data):
     """Append data to logs."""
     LOGS.append(data)
+    response_ok()
     return LOGS
 
 
 def server_main():
-    """Main server function."""
+    """Main server."""
     server_address = ('localhost', 8080)
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print('server is: ', server, '\nserver_address: ', server_address)
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
+    print('server_address: {}'.format(server_address))
     server.bind(server_address)
+
     server.listen(1)
 
     while True:
-        print(sys.stderr, "waiting for a connection")
+        print("waiting for a connection\n")
         connection, client_address = server.accept()
 
         try:
-            print(sys.stderr, "connection from", client_address)
+            print("connection from", client_address)
 
             while True:
                 data = connection.recv(16).decode('utf8')
                 print(sys.stderr, "received %s" % data)
-
                 if data:
-                    response_ok()
-                    print(sys.stderr, "sending data back to the client")
-                    connection.sendall(data)
-                    response_logs(data)
+                    print("sending data back to the client")
+                    connection.sendall(data.encode())
                 else:
-                    response_error()
-                    print(sys.stderr, "no more data from", client_address)
+                    print("no more data from", client_address)
                     break
-            connection.close()
-            sys.exit(1)
 
-        finally:
+        except KeyboardInterrupt:
+            connection.shutdown(socket.SHUT_WR)
             connection.close()
-            sys.exit(1)
+            sys.exit()
 
 
 if __name__ == '__main__':
