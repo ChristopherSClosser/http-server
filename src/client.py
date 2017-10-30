@@ -22,8 +22,6 @@ def main(message):
         while amount_rec < amount_ex:
             data += server.recv(16).decode('utf8')
             amount_rec += len(data)
-            # print('received %s ' % data)
-
     finally:
         server.close()
 
