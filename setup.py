@@ -2,7 +2,7 @@
 from setuptools import setup
 
 setup(
-    name='echo-server',
+    name='http-server',
     description='simple http server',
     author='Chris Closser, David Franklin',
     py_modules=['server', 'client'],

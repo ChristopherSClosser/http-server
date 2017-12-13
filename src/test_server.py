@@ -1,41 +1,41 @@
 """Test server."""
 import pytest
-from client import main
+from client import client
 from server import parse_request
 
 
 def test_valid_client_string():
     """test_valid_client_string."""
     message = "This is a test message"
-    res = main(message)
-    assert res == "This is a test message"
+    res = client(message)
+    assert 'HTTP/1.1 200 OK' in res
 
 
 def test_a_response_ok():
     """Test if server response with HTTP 200 ok message."""
     from server import response_ok
     res = response_ok()
-    assert res == 'HTTP/1.1 200 OK'
+    assert b'HTTP/1.1 200 OK' in res
 
 
 def test_case_fail():
     """test_case_fail."""
     with pytest.raises(Exception):
-        main()
+        client()
 
 
 def test_response_error():
     """Test if server response with HTTP 500 Internal Server Error."""
     from server import response_error
     res = response_error()
-    assert res == 'HTTP/1.1 500 Internal Server Error'
+    assert b'HTTP/1.1 500 Internal Server Error' in res
 
 
 def test_response_logs():
     """test_response_logs."""
     from server import response_logs
     message = "This is a test message"
-    res = main(message)
+    res = client(message)
     response_logs(res)
     assert response_logs(res)
 
@@ -43,14 +43,14 @@ def test_response_logs():
 def test_message_shorter_than_one_buffer():
     """Test_message_shorter_than_one_buffer."""
     message = "A"
-    res = main(message)
-    assert len(res) == 1
+    res = client(message)
+    assert len(res) == 56
 
 
 def test_message_several_buffers():
     """Test_message_several_buffers."""
-    message = "Hello World this is a test"
-    res = main(message)
+    message = "Hello World this is a test\r\n"
+    res = client(message)
     assert len(res) > 5
 
 
@@ -83,7 +83,8 @@ def test_response_error_412_bad_precondition():
 
 def test_response_parse_request_200():
     """Test_response_parse_request_200."""
-    assert parse_request("GET www.google.com HTTP/1.1\r\nHost:\r\n") == "HTTP/1.1 200 OK www.google.com"
+    res = parse_request("GET www.google.com HTTP/1.1\r\nHost:\r\n")
+    assert res[2] == 'www.google.com'
 
 
 def test_parse_request_no_host_412():
@@ -93,4 +94,5 @@ def test_parse_request_no_host_412():
 
 def test_parse_request_message_well_formed_returns_uri():
     """Test for well formed request."""
-    assert parse_request("GET URI HTTP/1.1\r\nHost:\r\n") == "HTTP/1.1 200 OK URI"
+    res = parse_request("GET URI HTTP/1.1\r\nHost:\r\n")
+    assert res[2] == 'URI'
