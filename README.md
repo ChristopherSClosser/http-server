@@ -8,7 +8,6 @@
 - Staring out making a simple echo server
   - Create server module
   - Create client module
-  - Echo back 
   - Testing for both
 
 ## Getting Started

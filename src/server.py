@@ -1,59 +1,59 @@
-"""Simple echo server."""
-# -*- coding: utf-8 -*-
+"""Simple server."""
 
 import socket
 import sys
-LOGS = []
+from email.utils import formatdate
 
 
 def response_ok():
-    """Send an ok 200 message."""
-    return "HTTP/1.1 200 OK"
+    """HTTP '200 OK' response."""
+    return 'HTTP/1.1 200 OK\r\n\
+Date: {}\r\n\
+\r\n'.format(formatdate(usegmt=True)).encode('utf8')
 
 
 def response_error():
-    """Server error response."""
-    return "HTTP/1.1 500 Internal Server Error"
+    """HTTP '500 Internal Server Error' response."""
+    return 'HTTP/1.1 500 Internal Server Error\r\n\
+Date: {}\r\n\
+\r\n'.format(formatdate(usegmt=True)).encode('utf8')
 
 
-def response_logs(data):
-    """Append data to logs."""
-    LOGS.append(data)
-    response_ok()
-    return LOGS
+def server():
+    """Start a new server until user presses control D."""
+    try:
+        s = socket.socket(socket.AF_INET,
+                          socket.SOCK_STREAM,
+                          socket.IPPROTO_TCP)
+        s.bind(('127.0.0.1', 8000))
+        s.listen(1)
+        print('Server started')
+        while True:
+            conn, addr = s.accept()
+            conn.settimeout(2)
+
+            request = b''
+            try:
+                packet = conn.recv(8)
+                request = packet
+                while b'\r\n\r\n' not in request:
+                    packet = conn.recv(8)
+                    request += packet
+            except socket.timeout:
+                pass
+
+            print(request[:-4].decode('utf8'))
+            conn.sendall(response_ok())
+            conn.close()
+
+    except KeyboardInterrupt:
+        if 'conn' in locals():
+            conn.close()
+            print('Connection closed')
+        s.close()
+        print('Server closed')
+        sys.exit()
 
 
-def server_main():
-    """Main server."""
-    server_address = ('localhost', 8080)
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
-    print('server_address: {}'.format(server_address))
-    server.bind(server_address)
-
-    server.listen(1)
-
-    while True:
-        print("waiting for a connection\n")
-        connection, client_address = server.accept()
-
-        try:
-            print("connection from", client_address)
-
-            while True:
-                data = connection.recv(16).decode('utf8')
-                print(sys.stderr, "received %s" % data)
-                if data:
-                    print("sending data back to the client")
-                    connection.sendall(data.encode())
-                else:
-                    print("no more data from", client_address)
-                    break
-
-        except KeyboardInterrupt:
-            connection.shutdown(socket.SHUT_WR)
-            connection.close()
-            sys.exit()
-
-
-if __name__ == '__main__':
-    server_main()
+if __name__ == "__main__":
+    server()

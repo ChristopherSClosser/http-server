@@ -1,33 +1,31 @@
-"""Client."""
+"""Simple client."""
 
-import sys
 import socket
+import sys
 
 
-def main(message):
-    """Main method for send client message."""
-    server_address = ('localhost', 8080)
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
-    server.connect(server_address)
+def client(message):
+    """Send message to server and return server's response."""
+    c = socket.socket(socket.AF_INET,
+                      socket.SOCK_STREAM,
+                      socket.IPPROTO_TCP)
+    c.connect(('127.0.0.1', 8000))
 
     try:
-        server.sendall(message.encode('utf8'))
+        message = message.encode('utf8')
+    except UnicodeDecodeError:
+        pass
+    c.sendall(message + b'\r\n\r\n')
 
-        amount_rec = 0
-        amount_ex = len(message)
-        data = ''
+    packet = c.recv(8)
+    resp = packet
+    while b'\r\n\r\n' not in resp:
+        packet = c.recv(8)
+        resp += packet
 
-        while amount_rec < amount_ex:
-            data += server.recv(16).decode('utf8')
-            amount_rec += len(data)
-            print('received %s ' % data)
-
-    finally:
-        server.close()
-
-    return data
+    c.close()
+    return resp.decode('utf8')
 
 
-if __name__ == "__main__":
-    # pragma: no cover
-    main(sys.argv[1])
+if __name__ == '__main__':
+    print(client(sys.argv[1]))
