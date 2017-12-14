@@ -1,95 +1,118 @@
-# -*- coding: utf-8 -*-
-
-"""Simple echo server."""
+"""Simple server."""
 import socket
 import sys
 import os
-from datetime import datetime
-LOGS = []
+from mimetypes import guess_type
+from email.utils import formatdate
+from re import match
 
-# 'GET resource HTTP/1.1\r\nHost: www.some.com\r\n\r\n'
+LOGS = []
 
 
 def resolve_uri(uri):
-    """Parse uri and return response."""
-    body = ['', '']  # intialize empty list
+    """Parse uri get contents and return response."""
+    script_root_path = os.path.abspath(__file__).rsplit('/', 2)[0]
 
-    html_str = ""
-    contents = []
-    if os.path.isdir(uri):
-        html_str += "<ul>"
-        contents = os.listdir(uri)
-        body[0] = contents
+    root_path = script_root_path + '/src/dir_for_test'
 
-        for i in range(len(contents)):
-            html_str += "<li>" + contents[i] + "</li>"
+    os.chdir(root_path)
 
-        html_str += "</ul>"
+    uri = '.' + uri
 
-    elif os.path.isfile(uri):
-        extension = os.path.splitext(uri)
+    abs_uri = os.path.abspath(uri)
+    if not abs_uri.startswith(root_path):
+        raise OSError('Access Denied')
 
-        if extension[1] == ".txt":
-            file = open(uri, 'r')
-            html_str += "<div>" + file.read() + "</div>"
-            file.close()
-            body[1] = html_str
+    try:
+        os.chdir(uri)
 
-        elif extension[1] == ".png":
-            file = open(uri, 'r')
-            html_str += "<img>" + file.read() + "</img>"
-            file.close()
-            body[1] = html_str
+        body = """<!DOCTYPE html>
+<html>
+<body>
+"""
+        for item in os.listdir('.'):
+            body += item + '\n'
+        body += """</body>
+</html>
+"""
+        os.chdir(script_root_path)
+        return body.encode('utf8'), 'text/html'
 
-    else:
-        return 'FileNotFoundError: 404\nYou did not enter a valid file or path!'
+    except OSError as error:
+        if 'No such file or directory' in error.args:
+            os.chdir(script_root_path)
+            raise IOError('No such file or directory: ' + error.filename)
 
-    return body
+        elif 'Not a directory' in error.args:
+            dir_path, file_name = uri.rsplit('/', 1)
+            os.chdir(dir_path)
+
+            with open(file_name, 'rb') as file:
+                body = file.read()
+
+            file_type = guess_type(file_name)[0]
+
+            os.chdir(script_root_path)
+            return body, file_type or 'text/plain'
+
+        else:
+            os.chdir(script_root_path)
+            raise error
 
 
-def parse_request(request):
+def parse_request(req):
     """Look for a well formed get request."""
-    req_list = request.split()
+    if b'\r\nHost: ' not in req:
+        raise ValueError('Host header missing from request')
 
-    if "GET" not in req_list[0]:
-        return "400 BAD REQUEST"
-    elif "HTTP/1.1" not in req_list[2]:
-        return "412 PRECONDITION FAILED - HTTP v. 1.1 required"
-    elif "Host" not in req_list[3]:
-        return "412 PRECONDITION FAILED - Host required"
-    else:
-        res = "HTTP/1.1 200 OK " + req_list[1]
-        response_logs(res)
-        return res
+    req_lines = req.split(b'\r\n')
+
+    if len(req_lines) < 4:
+        raise ValueError('Improper request length')
+
+    if req_lines[-1] or req_lines[-2]:
+        raise ValueError('Improper request formatting')
+
+    method_uri_protocol = req_lines[0].split()
+
+    if len(method_uri_protocol) != 3:
+        raise ValueError('Improper request formatting')
+
+    if method_uri_protocol[0] != b'GET':
+        raise NotImplementedError('Server only accepts GET requests')
+
+    if not method_uri_protocol[1].startswith(b'/'):
+        raise ValueError('Improper resource path formatting')
+
+    if method_uri_protocol[2] != b'HTTP/1.1':
+        raise NotImplementedError('Server only accepts HTTP/1.1 requests')
+
+    uri = method_uri_protocol[1]
+
+    for header in req_lines[1:-2]:
+        if header[0:1].isspace():
+            raise ValueError('Improper header formatting')
+
+        name, value = header.split(None, 1)
+        if name[-1:] != b':':
+            raise ValueError('Improper header formatting')
+
+        if b'Host' in name:
+            if not match('^[A-Za-z0-9_.-~]+$', value.decode('utf8')):
+                raise ValueError('Improper Host formatting')
+
+    return uri
 
 
-def response_ok(data):
-    """Send an ok 200 message."""
-    response = {}
-    response['HTTP Version'] = "HTTP/1.1 200 OK"
-
-    dt = datetime.now()
-    response['Date:'] = dt.strftime("%a, %d. %b %y %H: %M: %S GMT")
-
-    response['Server:'] = sys.version
-    content = resolve_uri(data)
-
-    response['Content-Length'] = (sys.getsizeof(content) // 8)
-
-    if '<img>' in content:
-        response['Content-Type:'] = 'image/html'
-    elif '<div>' in content:
-        response['Content-Type:'] = 'text/html'
-
-    response['Content'] = content
-
-    return response
-
-
-def response_error():
-    """Server error response."""
-    return "HTTP/1.1 500 Internal Server Error"
-
+def response_ok(body, mime_type):
+    """HTTP '200 OK' response object."""
+    return 'HTTP/1.1 200 OK\r\n\
+Date: {date}\r\n\
+Content-Type: {mime_type}\r\n\
+Content-Length: {length}\r\n\
+\r\n'.format(date=formatdate(usegmt=True),
+             mime_type=mime_type,
+             length=len(body)).encode('utf8') + body
 
 def response_logs(data):
     """Append data to logs."""
@@ -97,36 +120,68 @@ def response_logs(data):
     return LOGS
 
 
-def server_main():
-    """Main server."""
-    server_address = ('localhost', 8080)
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
-    print('server_address: {}'.format(server_address))
-    server.bind(server_address)
+def response_error(code, phrase):
+    """HTTP '500 Internal Server Error' response."""
+    return 'HTTP/1.1 {code} {phrase}\r\n\
+Date: {date}\r\n\
+\r\n'.format(code=code,
+             phrase=phrase,
+             date=formatdate(usegmt=True)).encode('utf8')
 
-    server.listen(1)
 
-    while True:
-        print("waiting for a connection\n")
-        connection, client_address = server.accept()
+def server():
+    """Start a new server until user presses control D."""
+    try:
+        s = socket.socket(socket.AF_INET,
+                          socket.SOCK_STREAM,
+                          socket.IPPROTO_TCP)
+        s.bind(('127.0.0.1', 8000))
+        s.listen(1)
+        print('Server started')
 
-        try:
-            print("connection from", client_address)
+        while True:
+            conn, addr = s.accept()
+            conn.settimeout(2)
 
-            while True:
-                data = connection.recv(16).decode('utf8')
-                # print("received %s" % data)
-                if data:
-                    connection.sendall(data.encode())
+            request = b''
+            try:
+                packet = conn.recv(8)
+                request = packet
+                while b'\r\n\r\n' not in request:
+                    packet = conn.recv(8)
+                    request += packet
+            except socket.timeout:
+                pass
+
+            print(request.decode('utf8'))
+
+            try:
+                uri = parse_request(request)
+                uri = uri if isinstance(uri, str) else uri.decode('utf8')
+                response = response_ok(*resolve_uri(uri))
+
+            except ValueError:
+                response = response_error(400, 'Bad Request')
+
+            except NotImplementedError as error:
+                if 'GET' in error.args[0]:
+                    response = response_error(405, 'Method Not Allowed')
                 else:
-                    break
+                    response = response_error(501, 'Not Implmented')
 
-        except KeyboardInterrupt:
-            connection.shutdown(socket.SHUT_WR)
-            connection.close()
-            sys.exit()
+            except (OSError, IOError) as error:
+                response = response_error(404, 'Not Found')
 
+            conn.sendall(response)
+            conn.close()
 
-if __name__ == '__main__':
-    # pragma: no cover
-    server_main()
+    except KeyboardInterrupt:
+        if 'conn' in locals():
+            conn.close()
+            print('Connection closed')
+        s.close()
+        print('Server closed')
+        sys.exit()
+
+if __name__ == "__main__":
+    server()
