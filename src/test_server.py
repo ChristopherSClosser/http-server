@@ -1,7 +1,7 @@
 """Test server."""
 import pytest
 from client import client
-from server import parse_request
+from server import parse_request, resolve_uri
 import sys
 
 
@@ -330,3 +330,8 @@ Content-Type: text/plain\r\n\
 \r\n'
     with pytest.raises(ValueError):
         parse_request(req)
+
+
+def test_resolve_uri_html_directory():
+    """Test if returns HTML file, with the contents of a sub-directory."""
+    assert resolve_uri('') == (b'<!DOCTYPE html>\n<html>\n<body>\nhtml.html\njam.png\nanother.txt\n</body>\n</html>\n', 'text/html')

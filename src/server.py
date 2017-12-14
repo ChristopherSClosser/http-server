@@ -13,7 +13,7 @@ def resolve_uri(uri):
     """Parse uri get contents and return response."""
     script_root_path = os.path.abspath(__file__).rsplit('/', 1)[0]
 
-    root_path = script_root_path + '/webroot'
+    root_path = script_root_path + '/dir_for_test'
 
     abs_uri = os.path.abspath(root_path + uri)
 
