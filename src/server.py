@@ -3,6 +3,30 @@
 import socket
 import sys
 from email.utils import formatdate
+LOGS = []
+
+
+def parse_request(request):
+    """Look for a well formed get request."""
+    req_list = request.split()
+
+    if "GET" not in req_list[0]:
+        return "400 BAD REQUEST"
+    elif "HTTP/1.1" not in req_list[2]:
+        return "412 PRECONDITION FAILED - HTTP v. 1.1 required"
+    elif "Host" not in req_list[3]:
+        return "412 PRECONDITION FAILED - Host required"
+    else:
+        res = response_ok(), ' ', req_list[1]
+        response_logs(res)
+        return res
+
+
+def response_logs(data):
+    """Append data to logs."""
+    LOGS.append(data)
+    response_ok()
+    return LOGS
 
 
 def response_ok():
