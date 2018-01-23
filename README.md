@@ -18,10 +18,17 @@
 <!-- Provide a detailed description of the application design. What technologies (languages, libraries, etc) you're using, and any other relevant design information. -->
 - Python 2 and 3
   - pytest
+<<<<<<< HEAD
+
+=======
+>>>>>>> ea5abfd40a1b04a97977b05a3bff9398a391357f
   - socket
   - sys
+  - os
 
 ## Change Log
+<<<<<<< HEAD
+=======
 <!-- Use this are to document the iterative changes made to your application as each feature is successfully implemented. Use time stamps. Here's an example:
 
 01-01-2001 4:59pm - Added functionality to add and delete some things.
@@ -30,6 +37,7 @@
 
 ## Change Log
 
+>>>>>>> ea5abfd40a1b04a97977b05a3bff9398a391357f
 <pre>Oct 22 17 1300hrs&ensp;&ensp;-&ensp;&ensp;Init&ensp;&ensp;-  
 
 Oct 22 17 1330hrs server.py
@@ -40,7 +48,28 @@ Oct 22 17 1430hrs server.py
                   Testing
                   README
 
+<<<<<<< HEAD
+
 Oct 23 17 1300hrs server response_ok
                   Testing
                   README
+
+Oct 24 17 1300hrs response_error
+                  response_logs
+                  Testing
+                  ReadME
+
+Oct 25 17 1420hrs server parse_request
+                  Testing
+                  README
+
+Oct 26 17 1420hrs server resolve_uri
+                  Testing
+                  README
+
+=======
+Oct 23 17 1300hrs server response_ok
+                  Testing
+                  README
+>>>>>>> ea5abfd40a1b04a97977b05a3bff9398a391357f
 </pre>

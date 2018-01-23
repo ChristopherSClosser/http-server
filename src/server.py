@@ -1,46 +1,132 @@
 """Simple server."""
-
 import socket
 import sys
+import os
+from mimetypes import guess_type
 from email.utils import formatdate
+from re import match
+
 LOGS = []
 
 
-def parse_request(request):
+def resolve_uri(uri):
+    """Parse uri get contents and return response."""
+    script_root_path = os.path.abspath(__file__).rsplit('/', 2)[0]
+
+    root_path = script_root_path + '/src/dir_for_test'
+
+    os.chdir(root_path)
+
+    uri = '.' + uri
+
+    abs_uri = os.path.abspath(uri)
+    if not abs_uri.startswith(root_path):
+        raise OSError('Access Denied')
+
+    try:
+        os.chdir(uri)
+
+        body = """<!DOCTYPE html>
+<html>
+<body>
+"""
+        for item in os.listdir('.'):
+            body += item + '\n'
+        body += """</body>
+</html>
+"""
+        os.chdir(script_root_path)
+        return body.encode('utf8'), 'text/html'
+
+    except OSError as error:
+        if 'No such file or directory' in error.args:
+            os.chdir(script_root_path)
+            raise IOError('No such file or directory: ' + error.filename)
+
+        elif 'Not a directory' in error.args:
+            dir_path, file_name = uri.rsplit('/', 1)
+            os.chdir(dir_path)
+
+            with open(file_name, 'rb') as file:
+                body = file.read()
+
+            file_type = guess_type(file_name)[0]
+
+            os.chdir(script_root_path)
+            return body, file_type or 'text/plain'
+
+        else:
+            os.chdir(script_root_path)
+            raise error
+
+
+def parse_request(req):
     """Look for a well formed get request."""
-    req_list = request.split()
+    if b'\r\nHost: ' not in req:
+        raise ValueError('Host header missing from request')
 
-    if "GET" not in req_list[0]:
-        return "400 BAD REQUEST"
-    elif "HTTP/1.1" not in req_list[2]:
-        return "412 PRECONDITION FAILED - HTTP v. 1.1 required"
-    elif "Host" not in req_list[3]:
-        return "412 PRECONDITION FAILED - Host required"
-    else:
-        res = response_ok(), ' ', req_list[1]
-        response_logs(res)
-        return res
+    req_lines = req.split(b'\r\n')
 
+    if len(req_lines) < 4:
+        raise ValueError('Improper request length')
+
+    if req_lines[-1] or req_lines[-2]:
+        raise ValueError('Improper request formatting')
+
+    method_uri_protocol = req_lines[0].split()
+
+    if len(method_uri_protocol) != 3:
+        raise ValueError('Improper request formatting')
+
+    if method_uri_protocol[0] != b'GET':
+        raise NotImplementedError('Server only accepts GET requests')
+
+    if not method_uri_protocol[1].startswith(b'/'):
+        raise ValueError('Improper resource path formatting')
+
+    if method_uri_protocol[2] != b'HTTP/1.1':
+        raise NotImplementedError('Server only accepts HTTP/1.1 requests')
+
+    uri = method_uri_protocol[1]
+
+    for header in req_lines[1:-2]:
+        if header[0:1].isspace():
+            raise ValueError('Improper header formatting')
+
+        name, value = header.split(None, 1)
+        if name[-1:] != b':':
+            raise ValueError('Improper header formatting')
+
+        if b'Host' in name:
+            if not match('^[A-Za-z0-9_.-~]+$', value.decode('utf8')):
+                raise ValueError('Improper Host formatting')
+
+    return uri
+
+
+def response_ok(body, mime_type):
+    """HTTP '200 OK' response object."""
+    return 'HTTP/1.1 200 OK\r\n\
+Date: {date}\r\n\
+Content-Type: {mime_type}\r\n\
+Content-Length: {length}\r\n\
+\r\n'.format(date=formatdate(usegmt=True),
+             mime_type=mime_type,
+             length=len(body)).encode('utf8') + body
 
 def response_logs(data):
     """Append data to logs."""
     LOGS.append(data)
-    response_ok()
     return LOGS
 
 
-def response_ok():
-    """HTTP '200 OK' response."""
-    return 'HTTP/1.1 200 OK\r\n\
-Date: {}\r\n\
-\r\n'.format(formatdate(usegmt=True)).encode('utf8')
-
-
-def response_error():
+def response_error(code, phrase):
     """HTTP '500 Internal Server Error' response."""
-    return 'HTTP/1.1 500 Internal Server Error\r\n\
-Date: {}\r\n\
-\r\n'.format(formatdate(usegmt=True)).encode('utf8')
+    return 'HTTP/1.1 {code} {phrase}\r\n\
+Date: {date}\r\n\
+\r\n'.format(code=code,
+             phrase=phrase,
+             date=formatdate(usegmt=True)).encode('utf8')
 
 
 def server():
@@ -52,6 +138,7 @@ def server():
         s.bind(('127.0.0.1', 8000))
         s.listen(1)
         print('Server started')
+
         while True:
             conn, addr = s.accept()
             conn.settimeout(2)
@@ -66,8 +153,26 @@ def server():
             except socket.timeout:
                 pass
 
-            print(request[:-4].decode('utf8'))
-            conn.sendall(response_ok())
+            print(request.decode('utf8'))
+
+            try:
+                uri = parse_request(request)
+                uri = uri if isinstance(uri, str) else uri.decode('utf8')
+                response = response_ok(*resolve_uri(uri))
+
+            except ValueError:
+                response = response_error(400, 'Bad Request')
+
+            except NotImplementedError as error:
+                if 'GET' in error.args[0]:
+                    response = response_error(405, 'Method Not Allowed')
+                else:
+                    response = response_error(501, 'Not Implmented')
+
+            except (OSError, IOError) as error:
+                response = response_error(404, 'Not Found')
+
+            conn.sendall(response)
             conn.close()
 
     except KeyboardInterrupt:
@@ -77,7 +182,6 @@ def server():
         s.close()
         print('Server closed')
         sys.exit()
-
 
 if __name__ == "__main__":
     server()
