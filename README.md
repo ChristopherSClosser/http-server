@@ -8,7 +8,6 @@
 - Staring out making a simple echo server
   - Create server module
   - Create client module
-  - Echo back 
   - Testing for both
 
 ## Getting Started
@@ -33,4 +32,7 @@ Oct 22 17 1430hrs server.py
                   Testing
                   README
 
+Oct 23 17 1300hrs server response_ok
+                  Testing
+                  README
 </pre>
